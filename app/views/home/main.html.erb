@@ -5,12 +5,12 @@
   <h1>Primeiro Jogo - Rails Impl.</h1>
   <br>
   <div class="row">
-    <article class="col-md-8">
+    <article class="col-md-7">
       <canvas id='screen' height="10" width="10"></canvas>
     </article>
-    <aside class="col-md-4">
+    <aside class="col-md-5">
       <div class="row">
-        <label for="name" class="name">Nome do Jogador</label><br/>
+        <label for="name" class="name">Nome do Jogador (opcional)</label><br/>
         <input type="text" id='name' class="form-control"></input>
       </div>
       <div class="row">&nbsp;</div>
@@ -21,7 +21,7 @@
             <th>Channel Id</th>
             <th>Count</th>
           </thead>
-          <tbody>
+          <tbody id='score-body'>
             <tr>
               <td>Nome</td>
               <td>xxxx</td>
@@ -41,11 +41,11 @@
           <tfoot>
             <tr>
               <td colspan="2">Total colisões</td>
-              <td class="bold">123</td>
+              <td class="bold"><span id="total_colisions">123</span></td>
             </tr>
             <tr>
               <td>Melhor Jogador</td>
-              <td colspan="2" class="bold">Nome</td>
+              <td colspan="2" class="bold"><span id="best_player">Nome (xx colisions)</span></td>
             </tr>
           </tfoot>
         </table>
