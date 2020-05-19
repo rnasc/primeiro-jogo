@@ -1,2 +1,20 @@
 // Bootstrap 4
 @import "~bootstrap/scss/bootstrap";
+
+.alert {
+  width: 60%;
+  z-index: 3000;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  box-shadow: 5px 5px 5px darkgrey;
+}
+
+.right-space {
+  padding-right: 4%;
+}
+
+.right {
+  text-align: right;
+}

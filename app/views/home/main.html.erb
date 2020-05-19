@@ -1,21 +1,26 @@
 <% stylesheet_pack_tag 'application' %>
 
+<div class="center alert alert-warning" id="message">Empty
+</div>
 
-<div class="container">
+<div class="container-fluid">
   <h1>Primeiro Jogo - Rails Impl.</h1>
   <br>
   <div class="row">
     <article class="col-md-7">
       <canvas id='screen' height="10" width="10"></canvas>
     </article>
-    <aside class="col-md-5">
+    <aside class="col-md-5 right-space">
+      <div class="row ">
+        <%= link_to 'Click here', home_message_path, remote: true %>
+      </div>
       <div class="row">
         <label for="name" class="name">Nome do Jogador (opcional)</label><br/>
-        <input type="text" id='name' class="form-control"></input>
+        <input type="text" id='name' class="form-control"/>
       </div>
       <div class="row">&nbsp;</div>
       <div class="row">
-        <table class="table table-striped">
+        <table class="table table-striped ">
           <thead>
             <th>Nome</th>
             <th>Channel Id</th>
@@ -25,27 +30,27 @@
             <tr>
               <td>Nome</td>
               <td>xxxx</td>
-              <td>3</td>
+              <td class="right">3</td>
             </tr>
             <tr>
               <td>Nome</td>
               <td>xxxx</td>
-              <td>3</td>
+              <td class="right">3</td>
             </tr>
             <tr>
               <td>Nome</td>
               <td>xxxx</td>
-              <td>3</td>
+              <td class="right">3</td>
             </tr>            
           </tbody>
           <tfoot>
             <tr>
               <td colspan="2">Total colisões</td>
-              <td class="bold"><span id="total_colisions">123</span></td>
+              <td class="bold right"><span id="total_colisions">123</span></td>
             </tr>
             <tr>
               <td>Melhor Jogador</td>
-              <td colspan="2" class="bold"><span id="best_player">Nome (xx colisions)</span></td>
+              <td colspan="2" class="bold right"><span id="best_player">Nome (xx colisions)</span></td>
             </tr>
           </tfoot>
         </table>
@@ -53,3 +58,17 @@
     </aside>
   </div>
 </div>
+
+
+<script>
+  $(document).on('turbolinks:load', function () {
+    fade()
+
+    function fade() {
+      $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+          $(".alert").slideUp(500);
+      });
+    }
+  })      
+</script>
+
