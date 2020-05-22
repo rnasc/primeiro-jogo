@@ -1,45 +1,76 @@
 import consumer from "./consumer"
-import render from "./render"
+import * as render from "./render"
+import createKeyboardListener from './keyboard-listener';
 
 
-const canvas = $("screen")
-// const game = render.createGame()
-const game = {
-  state: {
-    screen: {
-      width: 10,
-      height: 10
-    }
-  }
-}
-// render.setupScreen(canvas, game)
 
 consumer.subscriptions.create("GameChannel", {
 
   connected() {
     console.log('Connected')
+
+    const game = {
+      state: {
+        players: {},
+        fruits: {},
+        screen: {
+          width: 10,
+          height: 10
+        }
+      },
+      show_framerate: false
+    }
+
+    const screen = document.getElementById('screen')
+    // const game = render.createGame()
+
+    const keyboardListener = createKeyboardListener(document);
+    keyboardListener.subscribe((key) => {
+      var id_test = { channel: 'GameChannel' };
+      var stream_id = {
+        command: 'message',
+        identifier: JSON.stringify(id_test),
+        data: JSON.stringify({ action: "move_player", content: key })
+      }
+      consumer.send(stream_id);
+    })
+
+    render.setupScreen(screen, game)
+
+    const scoreTable = document.getElementById('score-body')
+    const framerate = document.getElementById('framerate')
+    const currentPlayerId = ''
+
+    render.renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId, framerate)
     // Called when the subscription is ready for use on the server
   },
 
   disconnected() {
-    console.log('Disconnected')
+    console.log('> Disconnected')
     // Called when the subscription has been terminated by the server
   },
 
   received(data) {
 
-    const msg = $('#message')
-    msg.empty();
-    msg.append(data.content.message)
-    msg.show();
-    $(".alert").fadeTo(2000, 500).slideUp(500, function () {
-      $(".alert").slideUp(500);
-    });
-    // Called when there's incoming data on the websocket for this channel
-  },
+    console.log(data)
 
-  setup(state) {
-    console.log('Setup');
-    console.log(state);
+    if (data.type) {
+      const chk = document.getElementById('chk_framerate');
+      // chk.addEventListener('change', () => {
+      data.game.show_framerate = chk.checked;
+      // })
+
+      render.setGame(data.game)
+    }
+
+    if (data.message) {
+      const msg = $('#message')
+      msg.empty();
+      msg.append(data.message)
+      msg.show();
+      $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+        $(".alert").slideUp(500);
+      });
+    }
   }
 });

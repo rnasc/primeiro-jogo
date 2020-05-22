@@ -1,65 +1,98 @@
+
 export function setupScreen(canvas, game) {
-  const { screen: { width, height } } = game.state
+  const { screen: { width, height } } = local_game.state
   canvas.width = width
   canvas.height = height
 }
 
-export default function renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId) {
+let frames = 0;
+let lastTime = parseInt(new Date().getTime() / 1000)
+
+let local_game = {
+  state: {
+    players: {},
+    fruits: {},
+    screen: {
+      width: 10,
+      height: 10
+    }
+  },
+  show_framerate: false
+}
+
+export function setGame(game) {
+  local_game = game
+}
+
+// export default function renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId) {
+export function renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId, framerate) {
   const context = screen.getContext('2d')
   context.fillStyle = 'white';
   context.clearRect(0, 0, 10, 10);
 
-  for (const playerId in game.state.players) {
-    const player = game.state.players[playerId]
+  for (const playerId in local_game.state.players) {
+    const player = local_game.state.players[playerId]
     context.fillStyle = 'black'
     context.fillRect(player.x, player.y, 1, 1)
   }
 
-  for (const fruitId in game.state.fruits) {
-    const fruit = game.state.fruits[fruitId]
+  for (const fruitId in local_game.state.fruits) {
+    const fruit = local_game.state.fruits[fruitId]
     context.fillStyle = 'green'
     context.fillRect(fruit.x, fruit.y, 1, 1)
   }
 
-  const currentPlayer = game.state.players[currentPlayerId]
+  const currentPlayer = local_game.state.players[currentPlayerId]
 
   if (currentPlayer) {
     context.fillStyle = '#F0DB4F'
     context.fillRect(currentPlayer.x, currentPlayer.y, 1, 1)
   }
 
-  updateScoreTable(scoreTable, game, currentPlayerId)
+  updateScoreTable(scoreTable, currentPlayerId)
 
-  if (game.paused) {
-
+  if (local_game.show_framerate) {
+    frames++;
+    const curTime = parseInt((new Date().getTime() / 1000))
+    if (lastTime !== curTime) {
+      framerate.innerHTML = `${frames} fps`
+      frames = 0;
+      lastTime = curTime
+    }
   } else {
-    requestAnimationFrame(() => {
-      renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId)
-    })
+    framerate.innerHTML = "n/a"
   }
+
+  requestAnimationFrame(() => {
+    renderScreen(screen, scoreTable, game, requestAnimationFrame, currentPlayerId, framerate)
+  })
+
 }
 
-function updateScoreTable(scoreTable, game, currentPlayerId) {
+function updateScoreTable(scoreTable, currentPlayerId) {
   const maxResults = 10
 
-  let scoreTableInnerHTML = `
-        <tr class="header">
-            <td>Top 10 Jogadores</td>
-            <td>Pontos</td>
-        </tr>
-    `
+  let scoreTableInnerHTML = ''
+  // let scoreTableInnerHTML = `
+  //       <tr class="header">
+  //           <td>Top 10 Jogadores</td>
+  //           <td>Pontos</td>
+  //       </tr>
+  //   `
 
   const playersArray = []
 
-  for (let socketId in game.state.players) {
-    const player = game.state.players[socketId]
+  for (let playerId in local_game.state.players) {
+    const player = local_game.state.players[playerId]
     playersArray.push({
-      playerId: socketId,
+      playerId: playerId,
+      name: player.name,
       x: player.x,
       y: player.y,
       score: player.score,
     })
   }
+
 
   const playersSortedByScore = playersArray.sort((first, second) => {
     if (first.score < second.score) {
@@ -78,8 +111,9 @@ function updateScoreTable(scoreTable, game, currentPlayerId) {
   scoreTableInnerHTML = topScorePlayers.reduce((stringFormed, player) => {
     return stringFormed + `
             <tr ${player.playerId === currentPlayerId ? 'class="current-player"' : ''}>
+                <td>${player.name}</td>
                 <td>${player.playerId}</td>
-                <td>${player.score}</td>
+                <td style="text-align:right">${player.score}</td>
             </tr>
         `
   }, scoreTableInnerHTML)
